@@ -36,6 +36,7 @@ import nl.basjes.parse.useragent.calculate.CalculateNetworkType;
 import nl.basjes.parse.useragent.calculate.ConcatNONDuplicatedCalculator;
 import nl.basjes.parse.useragent.calculate.FieldCalculator;
 import nl.basjes.parse.useragent.calculate.MajorVersionCalculator;
+import nl.basjes.parse.useragent.parse.MatcherTree;
 import nl.basjes.parse.useragent.parse.UserAgentTreeFlattener;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.slf4j.Logger;
@@ -116,12 +117,6 @@ import static nl.basjes.parse.useragent.utils.YauaaVersion.logVersion;
 @DefaultSerializer(AbstractUserAgentAnalyzerDirect.KryoSerializer.class)
 public abstract class AbstractUserAgentAnalyzerDirect implements Analyzer, Serializable {
 
-    // We set this to 1000000 always.
-    // Why?
-    // At the time of writing this the actual HashMap size needed about 410K entries.
-    // To keep the bins small the load factor of 0.75 already puts us at the capacity of 1048576
-    private static final int INFORM_ACTIONS_HASHMAP_CAPACITY = 1000000;
-
     private static final Logger LOG = LoggerFactory.getLogger(AbstractUserAgentAnalyzerDirect.class);
     private final ArrayList<Matcher> allMatchers = new ArrayList<>(5000);
     private final ArrayList<Matcher> zeroInputMatchers = new ArrayList<>(100);
@@ -130,7 +125,6 @@ public abstract class AbstractUserAgentAnalyzerDirect implements Analyzer, Seria
         return allMatchers;
     }
 
-    private final Map<String, Set<MatcherAction>> informMatcherActions = new LinkedHashMap<>(INFORM_ACTIONS_HASHMAP_CAPACITY);
     private transient Map<String, List<MappingNode>> matcherConfigs = new HashMap<>();
 
     private boolean showMatcherStats = false;
@@ -202,8 +196,6 @@ public abstract class AbstractUserAgentAnalyzerDirect implements Analyzer, Seria
         lines.add("Lookups      : " + ((lookups == null) ? 0 : lookups.size()));
         lines.add("LookupSets   : " + lookupSets.size());
         lines.add("Matchers     : " + allMatchers.size());
-        lines.add("Hashmap size : " + informMatcherActions.size());
-        lines.add("Ranges map   : " + informMatcherActionRanges.size());
         lines.add("Testcases    : " + testCases.size());
 
         logVersion(lines);
@@ -316,15 +308,14 @@ public abstract class AbstractUserAgentAnalyzerDirect implements Analyzer, Seria
      * no memory leaks (that we know of).
      */
     public synchronized void destroy() {
-        allMatchers.forEach(Matcher::destroy);
+        // FIXME        allMatchers.forEach(Matcher::destroy);
         allMatchers.clear();
         allMatchers.trimToSize();
 
-        zeroInputMatchers.forEach(Matcher::destroy);
+        // FIXMEzeroInputMatchers.forEach(Matcher::destroy);
         zeroInputMatchers.clear();
         zeroInputMatchers.trimToSize();
 
-        informMatcherActions.clear();
         matcherConfigs.clear();
 
         if (wantedFieldNames != null) {
@@ -518,10 +509,8 @@ public abstract class AbstractUserAgentAnalyzerDirect implements Analyzer, Seria
         long stop = System.nanoTime();
 
         matchersHaveBeenInitialized = true;
-        LOG.info("Built in {} msec : Hashmap {}, Ranges map:{}",
-            (stop - start) / 1000000,
-            informMatcherActions.size(),
-            informMatcherActionRanges.size());
+        LOG.info("Built in {} msec",
+            (stop - start) / 1000000);
 
         for (Matcher matcher: allMatchers) {
             if (matcher.getActionsThatRequireInput() == 0) {
@@ -803,14 +792,6 @@ config:
 
     }
 
-    // These are the actual subrange we need for the paths.
-    private final Map<String, Set<Range>> informMatcherActionRanges = new HashMap<>(10000);
-    @Override
-    public void lookingForRange(String treeName, Range range) {
-        Set<Range> ranges = informMatcherActionRanges.computeIfAbsent(treeName, k -> new LinkedHashSet<>(4));
-        ranges.add(range);
-    }
-
     // We do not want to put ALL lengths in the hashmap for performance reasons
     public static final int MAX_PREFIX_HASH_MATCH = 3;
 
@@ -826,23 +807,12 @@ config:
     // These are the paths for which we have prefix requests.
     private final Map<String, Set<Integer>> informMatcherActionPrefixesLengths = new HashMap<>(1000);
 
-    @Override
-    public void informMeAboutPrefix(MatcherAction matcherAction, String treeName, String prefix) {
-        this.informMeAbout(matcherAction, treeName + "{\"" + firstCharactersForPrefixHash(prefix, MAX_PREFIX_HASH_MATCH) + "\"");
-        Set<Integer> lengths = informMatcherActionPrefixesLengths.computeIfAbsent(treeName, k -> new LinkedHashSet<>(4));
-        lengths.add(firstCharactersForPrefixHashLength(prefix, MAX_PREFIX_HASH_MATCH));
-    }
+    public void informMeAbout(MatcherAction matcherAction, MatcherTree matcherTree) {
+        LOG.info("[informMeAbout] tree: {}   -->  action {}", matcherTree, matcherAction);
 
-    @Override
-    public Set<Integer> getRequiredPrefixLengths(String treeName) {
-        return informMatcherActionPrefixesLengths.get(treeName);
-    }
-
-    public void informMeAbout(MatcherAction matcherAction, String keyPattern) {
-        String hashKey = keyPattern.toLowerCase();
-        Set<MatcherAction> analyzerSet = informMatcherActions
-            .computeIfAbsent(hashKey, k -> new LinkedHashSet<>());
-        analyzerSet.add(matcherAction);
+//        Set<MatcherAction> analyzerSet = informMatcherActions
+//            .computeIfAbsent(hashKey, k -> new HashSet<>());
+//        analyzerSet.add(matcherAction);
     }
 
     private boolean verbose = false;
@@ -1013,11 +983,11 @@ config:
         return userAgent;
     }
 
-    public Set<Range> getRequiredInformRanges(String treeName) {
-        return informMatcherActionRanges.computeIfAbsent(treeName, k -> Collections.emptySet());
-    }
+//    public Set<Range> getRequiredInformRanges(String treeName) {
+//        return informMatcherActionRanges.computeIfAbsent(treeName, k -> Collections.emptySet());
+//    }
 
-    public void inform(String key, String value, ParseTree ctx) {
+    public void inform(String key, String value, ParseTree<MatcherTree> ctx) {
         inform(key, key, value, ctx);
         inform(key + "=\"" + value + '"', key, value, ctx);
 
@@ -1032,7 +1002,7 @@ config:
         }
     }
 
-    private void inform(String match, String key, String value, ParseTree ctx) {
+    private void inform(String match, String key, String value, ParseTree<MatcherTree> ctx) {
         Set<MatcherAction> relevantActions = informMatcherActions.get(match.toLowerCase(Locale.ENGLISH));
         if (verbose) {
             if (relevantActions == null) {
@@ -1125,6 +1095,8 @@ config:
 
         private final UserAgent result;
 
+        private final MatcherTree matcherTreeRoot = null; // FIXME: createInfiniteFullTree();
+
         GetAllPathsAnalyzer(String useragent) {
             UserAgentTreeFlattener flattener = new UserAgentTreeFlattener(this);
             result = flattener.parse(useragent);
@@ -1138,13 +1110,13 @@ config:
             return result;
         }
 
-        public void inform(String path, String value, ParseTree ctx) {
+        public void inform(String path, String value, ParseTree<MatcherTree> ctx) {
             values.add(path);
             values.add(path + "=\"" + value + "\"");
             values.add(path + "{\"" + firstCharactersForPrefixHash(value, MAX_PREFIX_HASH_MATCH) + "\"");
         }
 
-        public void informMeAbout(MatcherAction matcherAction, String keyPattern) {
+        public void informMeAbout(MatcherAction matcherAction, MatcherTree keyPattern) {
             // Not needed to only get all paths
         }
 
@@ -1153,17 +1125,6 @@ config:
         }
 
         public Set<Range> getRequiredInformRanges(String treeName) {
-            // Not needed to only get all paths
-            return Collections.emptySet();
-        }
-
-        @Override
-        public void informMeAboutPrefix(MatcherAction matcherAction, String treeName, String prefix) {
-            // Not needed to only get all paths
-        }
-
-        @Override
-        public Set<Integer> getRequiredPrefixLengths(String treeName) {
             // Not needed to only get all paths
             return Collections.emptySet();
         }
@@ -1178,6 +1139,11 @@ config:
         public Map<String, Set<String>> getLookupSets() {
             // Not needed to only get all paths
             return Collections.emptyMap();
+        }
+
+        @Override
+        public MatcherTree getMatcherTreeRoot() {
+            return matcherTreeRoot;
         }
     }
 
@@ -1498,7 +1464,6 @@ config:
         return "UserAgentAnalyzerDirect{" +
             "\nallMatchers=" + allMatchers +
             "\n, zeroInputMatchers=" + zeroInputMatchers +
-            "\n, informMatcherActions=" + informMatcherActions +
             "\n, showMatcherStats=" + showMatcherStats +
             "\n, doingOnlyASingleTest=" + doingOnlyASingleTest +
             "\n, wantedFieldNames=" + wantedFieldNames +
