@@ -136,15 +136,15 @@ public class WalkList implements Serializable {
     private final boolean verbose;
 
     public static class WalkResult {
-        private final ParseTree tree;
+        private final ParseTree<MatcherTree> tree;
         private final String value;
 
-        public WalkResult(ParseTree tree, String value) {
+        public WalkResult(ParseTree<MatcherTree> tree, String value) {
             this.tree = tree;
             this.value = value;
         }
 
-        public ParseTree getTree() {
+        public ParseTree<MatcherTree> getTree() {
             return tree;
         }
 
@@ -168,7 +168,7 @@ public class WalkList implements Serializable {
         verbose = false;
     }
 
-    public WalkList(ParserRuleContext requiredPattern,
+    public WalkList(ParserRuleContext<MatcherTree> requiredPattern,
                     Map<String, Map<String, String>> lookups,
                     Map<String, Set<String>> lookupSets,
                     boolean verbose) {
@@ -233,13 +233,13 @@ public class WalkList implements Serializable {
         return ((long)steps.size()) - (lastRelevantStepIndex + 1);
     }
 
-    public WalkResult walk(ParseTree tree, String value) {
+    public WalkResult walk(ParseTree<MatcherTree> tree, String value) {
         if (steps.isEmpty()) {
             return new WalkResult(tree, value);
         }
         Step firstStep = steps.get(0);
         if (verbose) {
-            Step.LOG.info("Tree: >>>{}<<<", AntlrUtils.getSourceText((ParserRuleContext)tree));
+            Step.LOG.info("Tree: >>>{}<<<", AntlrUtils.getSourceText((ParserRuleContext<MatcherTree>)tree));
             Step.LOG.info("Enter step: {}", firstStep);
         }
         WalkResult result = firstStep.walk(tree, value);
@@ -605,7 +605,7 @@ public class WalkList implements Serializable {
             return null; // Void
         }
 
-        private Void doStepNextN(PathContext nextStep, int nextSteps) {
+        private Void doStepNextN(PathContext<MatcherTree> nextStep, int nextSteps) {
             fromHereItCannotBeInHashMapAnymore();
             add(new StepNextN(nextSteps));
             visitNext(nextStep);
@@ -636,7 +636,7 @@ public class WalkList implements Serializable {
             return null; // Void
         }
 
-        private Void doStepPrevN(PathContext nextStep, int prevSteps) {
+        private Void doStepPrevN(PathContext<MatcherTree> nextStep, int prevSteps) {
             fromHereItCannotBeInHashMapAnymore();
             add(new StepPrevN(prevSteps));
             visitNext(nextStep);
