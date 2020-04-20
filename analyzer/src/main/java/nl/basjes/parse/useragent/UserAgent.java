@@ -18,6 +18,7 @@
 package nl.basjes.parse.useragent;
 
 import nl.basjes.parse.useragent.analyze.Matcher;
+import nl.basjes.parse.useragent.parse.MatcherTree;
 import nl.basjes.parse.useragent.parser.UserAgentBaseListener;
 import nl.basjes.parse.useragent.utils.DefaultANTLRErrorListener;
 import org.antlr.v4.runtime.Parser;
@@ -43,7 +44,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class UserAgent extends UserAgentBaseListener implements Serializable, DefaultANTLRErrorListener {
+public class UserAgent extends UserAgentBaseListener<MatcherTree> implements Serializable, DefaultANTLRErrorListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserAgent.class);
     public static final String DEVICE_CLASS                            = "DeviceClass";

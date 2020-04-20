@@ -35,7 +35,6 @@ import nl.basjes.parse.useragent.calculate.CalculateNetworkType;
 import nl.basjes.parse.useragent.calculate.ConcatNONDuplicatedCalculator;
 import nl.basjes.parse.useragent.calculate.FieldCalculator;
 import nl.basjes.parse.useragent.calculate.MajorVersionCalculator;
-import nl.basjes.parse.useragent.parse.AgentPathFragment;
 import nl.basjes.parse.useragent.parse.MatcherTree;
 import nl.basjes.parse.useragent.parse.UserAgentTreeFlattener;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -511,7 +510,7 @@ public abstract class AbstractUserAgentAnalyzerDirect implements Analyzer, Seria
         }
 
         // Initialize the now empty tree of all matchers
-        matcherTreeRoot = new MatcherTree(AgentPathFragment.AGENT, 1);
+        matcherTreeRoot = MatcherTree.createNewAgentRoot();
 
         long start = System.nanoTime();
         allMatchers.forEach(m -> m.initialize(matcherTreeRoot));
