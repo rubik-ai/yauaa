@@ -47,114 +47,110 @@ config:
 # Spotify Generic
 - matcher:
     variable:
-      - 'Spotify                             :agent.(1)product.(1)name = "Spotify"'
-      - 'System                              :agent.(2)product'
-      - 'Device                              :@System.comments.(1)entry'
+    - 'Spotify                             :agent.(1)product.(1)name = "Spotify"'
+    - 'System                              :agent.(2)product'
+    - 'Device                              :@System.comments.(1)entry'
     extract:
-      - 'OperatingSystemName                 :      501 :@System.name'
-      - 'OperatingSystemVersion              :      501 :@System.version'
-      - 'AgentClass                          :      100 :"Special"'
-      - 'AgentName                           :      100 :"Spotify"'
-      - 'AgentVersion                        :      100 :@Spotify^.version'
+    - 'OperatingSystemName                 :      501 :@System.name'
+    - 'OperatingSystemVersion              :      501 :@System.version'
+    - 'AgentClass                          :      100 :"Special"'
+    - 'AgentName                           :      100 :"Spotify"'
+    - 'AgentVersion                        :      100 :@Spotify^.version'
 
 # Spotify Win32
 - matcher:
-    options:
-      - 'only'
-      - 'verbose'
-
     variable:
-      - 'Spotify                             :agent.(1)product.(1)name = "Spotify"'
-      - 'System                              :agent.(2)product.(1)name = "Win32"^'
-      - 'Device                              :@System.comments.(1)entry'
+    - 'Spotify                             :agent.(1)product.(1)name = "Spotify"'
+    - 'System                              :agent.(2)product.(1)name = "Win32"^'
+    - 'Device                              :@System.comments.(1)entry'
     extract:
-      - 'DeviceClass                         :        1 :"Desktop"'
-      - 'DeviceName                          :     1110 :@Device'
-      - 'OperatingSystemClass                :     1501 :"Desktop"'
-      - 'OperatingSystemName                 :     1501 :"Windows"'
-      - 'OperatingSystemVersion              :     1501 :"??"'
+    - 'DeviceClass                         :        1 :"Desktop"'
+    - 'DeviceName                          :     1110 :@Device'
+    - 'OperatingSystemClass                :     1501 :"Desktop"'
+    - 'OperatingSystemName                 :     1501 :"Windows"'
+    - 'OperatingSystemVersion              :     1501 :"??"'
 
 # Spotify Win64
 - matcher:
     variable:
-      - 'Spotify                             :agent.(1)product.(1)name = "Spotify"'
-      - 'System                              :agent.(2)product.(1)name = "Win64"^'
-      - 'Device                              :@System.comments.(1)entry'
+    - 'Spotify                             :agent.(1)product.(1)name = "Spotify"'
+    - 'System                              :agent.(2)product.(1)name = "Win64"^'
+    - 'Device                              :@System.comments.(1)entry'
     extract:
-      - 'DeviceClass                         :        1 :"Desktop"'
-      - 'DeviceName                          :     1110 :@Device'
-      - 'OperatingSystemClass                :     1501 :"Desktop"'
-      - 'OperatingSystemName                 :     1501 :"Windows"'
-      - 'OperatingSystemVersion              :     1501 :"??"'
+    - 'DeviceClass                         :        1 :"Desktop"'
+    - 'DeviceName                          :     1110 :@Device'
+    - 'OperatingSystemClass                :     1501 :"Desktop"'
+    - 'OperatingSystemName                 :     1501 :"Windows"'
+    - 'OperatingSystemVersion              :     1501 :"??"'
 
 # Spotify Android
 - matcher:
     variable:
-      - 'Spotify                             :agent.(1)product.(1)name = "Spotify"'
-      - 'System                              :agent.(2)product.(1)name = "Android"^'
-      - 'Device                              :@System.comments.(1)entry'
+    - 'Spotify                             :agent.(1)product.(1)name = "Spotify"'
+    - 'System                              :agent.(2)product.(1)name = "Android"^'
+    - 'Device                              :@System.comments.(1)entry'
     extract:
-      - 'DeviceClass                         :        1 :"Mobile"' # Classification based on device name is too hard.
-      - 'DeviceName                          :     1110 :@Device'
-      - 'DeviceBrand                         :     1400 : LookUpPrefix[MobileBrandPrefixes;@Device;"<<<null>>>"]'
-      - 'OperatingSystemClass                :     1501 :"Mobile"'
-      - 'OperatingSystemName                 :     1501 :"Android"'
-      - 'OperatingSystemVersion              :     1501 :LookUp[AndroidAPIToVersionMap;@System^.version;"??"]'
-      - 'AgentClass                          :      100 :"Special"'
-      - 'AgentName                           :      100 :"Spotify"'
-      - 'AgentVersion                        :      100 :@Spotify^.version'
+    - 'DeviceClass                         :        1 :"Mobile"' # Classification based on device name is too hard.
+    - 'DeviceName                          :     1110 :@Device'
+    - 'DeviceBrand                         :     1400 : LookUpPrefix[MobileBrandPrefixes;@Device;"<<<null>>>"]'
+    - 'OperatingSystemClass                :     1501 :"Mobile"'
+    - 'OperatingSystemName                 :     1501 :"Android"'
+    - 'OperatingSystemVersion              :     1501 :LookUp[AndroidAPIToVersionMap;@System^.version;"??"]'
+    - 'AgentClass                          :      100 :"Special"'
+    - 'AgentName                           :      100 :"Spotify"'
+    - 'AgentVersion                        :      100 :@Spotify^.version'
 
 # Special case for Google Pixel
 - matcher:
     variable:
-      - 'Android        : agent.product.name="Android"'
-      - 'Pixel          : @Android^.(1)comments.(1)entry[1]="Pixel"'
+    - 'Android                             :agent.product.name="Android"'
+    - 'Pixel                               :@Android^.(1)comments.(1)entry[1]="Pixel"'
     extract:
-      - 'DeviceClass                         :      105 :"Phone"'
-      - 'DeviceBrand                         :     1405 :"Google"'
-      - 'DeviceName                          :      105 :@Pixel@'
+    - 'DeviceClass                         :      105 :"Phone"'
+    - 'DeviceBrand                         :     1405 :"Google"'
+    - 'DeviceName                          :      105 :@Pixel@'
 
 - test:
     input:
       user_agent_string: 'Spotify/8.0.0 Android/22 (Blade A460)'
     expected:
-      DeviceClass                           : 'Mobile'
-      DeviceName                            : 'ZTE Blade A460'
-      DeviceBrand                           : 'ZTE'
-      OperatingSystemClass                  : 'Mobile'
-      OperatingSystemName                   : 'Android'
-      OperatingSystemVersion                : '??'
-      OperatingSystemVersionMajor           : '??'
-      OperatingSystemNameVersion            : 'Android ??'
-      OperatingSystemNameVersionMajor       : 'Android ??'
-      AgentClass                            : 'Special'
-      AgentName                             : 'Spotify'
-      AgentVersion                          : '8.0.0'
-      AgentVersionMajor                     : '8'
-      AgentNameVersion                      : 'Spotify 8.0.0'
-      AgentNameVersionMajor                 : 'Spotify 8'
+      DeviceClass                          : 'Mobile'
+      DeviceName                           : 'ZTE Blade A460'
+      DeviceBrand                          : 'ZTE'
+      OperatingSystemClass                 : 'Mobile'
+      OperatingSystemName                  : 'Android'
+      OperatingSystemVersion               : '??'
+      OperatingSystemVersionMajor          : '??'
+      OperatingSystemNameVersion           : 'Android ??'
+      OperatingSystemNameVersionMajor      : 'Android ??'
+      AgentClass                           : 'Special'
+      AgentName                            : 'Spotify'
+      AgentVersion                         : '8.0.0'
+      AgentVersionMajor                    : '8'
+      AgentNameVersion                     : 'Spotify 8.0.0'
+      AgentNameVersionMajor                : 'Spotify 8'
 
 
 - test:
     input:
       user_agent_string: 'Spotify/8.2.0 iOS/10.0.1 (iPhone7,2)'
     expected:
-      DeviceClass                           : 'Phone'
-      DeviceName                            : 'Apple iPhone'
-      DeviceBrand                           : 'Apple'
-      DeviceVersion                         : 'iPhone 6'
-      OperatingSystemClass                  : 'Mobile'
-      OperatingSystemName                   : 'iOS'
-      OperatingSystemVersion                : '10.0.1'
-      OperatingSystemVersionMajor           : '10'
-      OperatingSystemNameVersion            : 'iOS 10.0.1'
-      OperatingSystemNameVersionMajor       : 'iOS 10'
-      AgentClass                            : 'Special'
-      AgentName                             : 'Spotify'
-      AgentVersion                          : '8.2.0'
-      AgentVersionMajor                     : '8'
-      AgentNameVersion                      : 'Spotify 8.2.0'
-      AgentNameVersionMajor                 : 'Spotify 8'
+      DeviceClass                          : 'Phone'
+      DeviceName                           : 'Apple iPhone'
+      DeviceBrand                          : 'Apple'
+      DeviceVersion                        : 'iPhone 6'
+      OperatingSystemClass                 : 'Mobile'
+      OperatingSystemName                  : 'iOS'
+      OperatingSystemVersion               : '10.0.1'
+      OperatingSystemVersionMajor          : '10'
+      OperatingSystemNameVersion           : 'iOS 10.0.1'
+      OperatingSystemNameVersionMajor      : 'iOS 10'
+      AgentClass                           : 'Special'
+      AgentName                            : 'Spotify'
+      AgentVersion                         : '8.2.0'
+      AgentVersionMajor                    : '8'
+      AgentNameVersion                     : 'Spotify 8.2.0'
+      AgentNameVersionMajor                : 'Spotify 8'
 
 
 - test:
@@ -234,3 +230,222 @@ config:
       AgentVersionMajor                    : '112000510'
       AgentNameVersion                     : 'Spotify 112000510'
       AgentNameVersionMajor                : 'Spotify 112000510'
+
+# =====================================================================
+# Amazon Alexa devices
+
+- matcher:
+    variable:
+    - 'AlexaDevice                         :agent.(1)product.(1)name{"Alexa"'
+    extract:
+    - 'DeviceClass                         :      105 :"Voice"'
+    - 'DeviceBrand                         :     1405 :"Amazon"'
+    - 'DeviceName                          :      105 :"Alexa"'
+
+- matcher:
+    variable:
+    - 'EchoDevice                          :agent.(1)product.(1)name="Echo"'
+    extract:
+    - 'DeviceClass                         :      105 :"Voice"'
+    - 'DeviceBrand                         :     1405 :"Amazon"'
+    - 'DeviceName                          :      105 :"Echo"'
+    - 'DeviceVersion                       :      105 :@EchoDevice^.version'
+    - 'OperatingSystemClass                :       10 : "Mobile"'
+    - 'OperatingSystemName                 :       10 : "FireOS"'
+    - 'OperatingSystemVersion              :       10 : "??"'
+
+- matcher:
+    variable:
+    - 'ExoPlayerLib                        :agent.product.(1)name="ExoPlayerLib"'
+    extract:
+    - 'LayoutEngineClass                   :      100 : "Special"'
+    - 'LayoutEngineName                    :      100 : "ExoPlayer"'
+    - 'LayoutEngineVersion                 :      100 : @ExoPlayerLib^.version'
+
+
+- test:
+    input:
+      user_agent_string: 'AlexaMediaPlayer/2.1.2860.0 (Linux;Android 5.1.1) ExoPlayerLib/1.5.9'
+    expected:
+      DeviceClass                          : 'Voice'
+      DeviceName                           : 'Amazon Alexa'
+      DeviceBrand                          : 'Amazon'
+      OperatingSystemClass                 : 'Mobile'
+      OperatingSystemName                  : 'Android'
+      OperatingSystemVersion               : '5.1.1'
+      OperatingSystemVersionMajor          : '5'
+      OperatingSystemNameVersion           : 'Android 5.1.1'
+      OperatingSystemNameVersionMajor      : 'Android 5'
+      LayoutEngineClass                    : 'Special'
+      LayoutEngineName                     : 'ExoPlayer'
+      LayoutEngineVersion                  : '1.5.9'
+      LayoutEngineVersionMajor             : '1'
+      LayoutEngineNameVersion              : 'ExoPlayer 1.5.9'
+      LayoutEngineNameVersionMajor         : 'ExoPlayer 1'
+      AgentClass                           : 'Special'
+      AgentName                            : 'AlexaMediaPlayer'
+      AgentVersion                         : '2.1.2860.0'
+      AgentVersionMajor                    : '2'
+      AgentNameVersion                     : 'AlexaMediaPlayer 2.1.2860.0'
+      AgentNameVersionMajor                : 'AlexaMediaPlayer 2'
+
+
+
+- test:
+    input:
+      user_agent_string: 'AlexaService/2.2.305814.0 (Linux;Android 9) ExoPlayerLib/2.8.4'
+    expected:
+      DeviceClass                          : 'Voice'
+      DeviceName                           : 'Amazon Alexa'
+      DeviceBrand                          : 'Amazon'
+      OperatingSystemClass                 : 'Mobile'
+      OperatingSystemName                  : 'Android'
+      OperatingSystemVersion               : '9'
+      OperatingSystemVersionMajor          : '9'
+      OperatingSystemNameVersion           : 'Android 9'
+      OperatingSystemNameVersionMajor      : 'Android 9'
+      LayoutEngineClass                    : 'Special'
+      LayoutEngineName                     : 'ExoPlayer'
+      LayoutEngineVersion                  : '2.8.4'
+      LayoutEngineVersionMajor             : '2'
+      LayoutEngineNameVersion              : 'ExoPlayer 2.8.4'
+      LayoutEngineNameVersionMajor         : 'ExoPlayer 2'
+      AgentClass                           : 'Special'
+      AgentName                            : 'AlexaService'
+      AgentVersion                         : '2.2.305814.0'
+      AgentVersionMajor                    : '2'
+      AgentNameVersion                     : 'AlexaService 2.2.305814.0'
+      AgentNameVersionMajor                : 'AlexaService 2'
+
+
+# First-Gen Amazon Echos
+# 1.0 is the Device Version?
+- test:
+    input:
+      user_agent_string: 'Echo/1.0(APNG)'
+    expected:
+      DeviceClass                          : 'Voice'
+      DeviceName                           : 'Amazon Echo'
+      DeviceBrand                          : 'Amazon'
+      DeviceVersion                        : '1.0'
+      OperatingSystemClass                 : 'Mobile'
+      OperatingSystemName                  : 'FireOS'
+      OperatingSystemVersion               : '??'
+      OperatingSystemVersionMajor          : '??'
+      OperatingSystemNameVersion           : 'FireOS ??'
+      OperatingSystemNameVersionMajor      : 'FireOS ??'
+      OperatingSystemVersionBuild          : '??'
+      LayoutEngineClass                    : 'Unknown'
+      LayoutEdngineName                    : 'Unknown'
+      LayoutEngineVersion                  : '??'
+      LayoutEngineVersionMajor             : '??'
+      LayoutEngineNameVersion              : 'Unknown ??'
+      LayoutEngineNameVersionMajor         : 'Unknown ??'
+      AgentClass                           : 'Special'
+      AgentName                            : 'Echo'
+      AgentVersion                         : '1.0'
+      AgentVersionMajor                    : '1'
+      AgentNameVersion                     : 'Echo 1.0'
+      AgentNameVersionMajor                : 'Echo 1'
+
+# ================================================
+
+- matcher:
+    variable:
+    - 'Device                              :agent.(1)product.(1)name[1]= "Linux"'
+    - 'Sonos                               :agent.(2)product.(1)name = "Sonos"'
+    extract:
+    - 'DeviceClass                         :        1 :"Voice"' # Classification based on device name is too hard.
+    - 'DeviceName                          :     1110 :@Sonos^.comments.(1)entry'
+    - 'DeviceBrand                         :     1400 : "Sonos"'
+    - 'OperatingSystemClass                :     1501 :"Embedded"'
+    - 'OperatingSystemName                 :     1501 :"Linux"'
+    - 'OperatingSystemVersion              :     1501 :"??"'
+    - 'AgentClass                          :      100 :"Special"'
+    - 'AgentName                           :      100 :"Sonos"'
+    - 'AgentVersion                        :      100 :@Sonos^.version'
+
+# Sonos Speakers
+- test:
+    input:
+      user_agent_string: 'Linux UPnP/1.0 Sonos/53.3-71050 (ZPS1)'
+    expected:
+      DeviceClass                          : 'Voice'
+      DeviceName                           : 'Sonos ZPS1'
+      DeviceBrand                          : 'Sonos'
+      OperatingSystemClass                 : 'Embedded'
+      OperatingSystemName                  : 'Linux'
+      OperatingSystemVersion               : '??'
+      OperatingSystemVersionMajor          : '??'
+      OperatingSystemNameVersion           : 'Linux ??'
+      OperatingSystemNameVersionMajor      : 'Linux ??'
+      OperatingSystemVersionBuild          : '??'
+      LayoutEngineClass                    : 'Unknown'
+      LayoutEngineName                     : 'Unknown'
+      LayoutEngineVersion                  : '??'
+      LayoutEngineVersionMajor             : '??'
+      LayoutEngineNameVersion              : 'Unknown ??'
+      LayoutEngineNameVersionMajor         : 'Unknown ??'
+      AgentClass                           : 'Special'
+      AgentName                            : 'Sonos'
+      AgentVersion                         : '53.3-71050'
+      AgentVersionMajor                    : '53'
+      AgentNameVersion                     : 'Sonos 53.3-71050'
+      AgentNameVersionMajor                : 'Sonos 53'
+
+
+- test:
+    input:
+      user_agent_string: 'Linux UPnP/1.0 Sonos/53.3-71050 (ZPS12)'
+    expected:
+      DeviceClass                          : 'Voice'
+      DeviceName                           : 'Sonos ZPS12'
+      DeviceBrand                          : 'Sonos'
+      OperatingSystemClass                 : 'Embedded'
+      OperatingSystemName                  : 'Linux'
+      OperatingSystemVersion               : '??'
+      OperatingSystemVersionMajor          : '??'
+      OperatingSystemNameVersion           : 'Linux ??'
+      OperatingSystemNameVersionMajor      : 'Linux ??'
+      OperatingSystemVersionBuild          : '??'
+      LayoutEngineClass                    : 'Unknown'
+      LayoutEngineName                     : 'Unknown'
+      LayoutEngineVersion                  : '??'
+      LayoutEngineVersionMajor             : '??'
+      LayoutEngineNameVersion              : 'Unknown ??'
+      LayoutEngineNameVersionMajor         : 'Unknown ??'
+      AgentClass                           : 'Special'
+      AgentName                            : 'Sonos'
+      AgentVersion                         : '53.3-71050'
+      AgentVersionMajor                    : '53'
+      AgentNameVersion                     : 'Sonos 53.3-71050'
+      AgentNameVersionMajor                : 'Sonos 53'
+
+
+- test:
+    input:
+      user_agent_string: 'Linux UPnP/1.0 Sonos/53.3-71050 (ZP120)'
+    expected:
+      DeviceClass                          : 'Voice'
+      DeviceName                           : 'Sonos ZP120'
+      DeviceBrand                          : 'Sonos'
+      OperatingSystemClass                 : 'Embedded'
+      OperatingSystemName                  : 'Linux'
+      OperatingSystemVersion               : '??'
+      OperatingSystemVersionMajor          : '??'
+      OperatingSystemNameVersion           : 'Linux ??'
+      OperatingSystemNameVersionMajor      : 'Linux ??'
+      OperatingSystemVersionBuild          : '??'
+      LayoutEngineClass                    : 'Unknown'
+      LayoutEngineName                     : 'Unknown'
+      LayoutEngineVersion                  : '??'
+      LayoutEngineVersionMajor             : '??'
+      LayoutEngineNameVersion              : 'Unknown ??'
+      LayoutEngineNameVersionMajor         : 'Unknown ??'
+      AgentClass                           : 'Special'
+      AgentName                            : 'Sonos'
+      AgentVersion                         : '53.3-71050'
+      AgentVersionMajor                    : '53'
+      AgentNameVersion                     : 'Sonos 53.3-71050'
+      AgentNameVersionMajor                : 'Sonos 53'
+

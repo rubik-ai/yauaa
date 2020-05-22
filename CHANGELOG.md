@@ -7,7 +7,8 @@ v5.18-SNAPSHOT
   - Updated dependencies
   - Fixed bug returning default values from cached results (no incorrect results, just too many)
   - The output is now "immutable" which makes returning from cache faster.
-  - Voice/Audio devices: Spotify
+  - Voice/Audio devices: Spotify, Alexa, Echo, Sonos
+  - Improve PlayStation 3,4 OS names
 - Updated UDF dependencies
   - Apache Beam      2.20.0
   - Elastic Logstash 7.6.2
